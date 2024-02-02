@@ -12,7 +12,7 @@ router.post('/signup', async (req, res) => {
     await Admin.create({
         username: username,
         password: password
-    })
+    });
 
     res.json({
         message: 'Admin created successfully'

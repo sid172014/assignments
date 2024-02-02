@@ -7,14 +7,25 @@
     let todoState = [];
     let oldTodoState = [];
 
+
+    // Finished adding up to do items inside the DOM element
     function addTodoToDom() {
-      
+      const child = document.createElement('div');
+      const titleGrandParent = document.createElement('div');
+      titleGrandParent.innerHTML = todoState[todoState.length-1].title;
+      titleGrandParent.setAttribute('id','titletodo');
+      const descriptionGrandParent = document.createElement('div');
+      descriptionGrandParent.innerHTML = todoState[todoState.length-1].description;
+      child.appendChild(titleGrandParent);
+      child.appendChild(descriptionGrandParent);
+      const todos = document.getElementById('todos');
+      todos.appendChild(child);
     }
 
     function removeTodoFromDom(todo) {
       
     }
-
+    // Updating the DOM element
     function updateTodoInDom(oldTodo, newTodo) {
         
     }
@@ -31,7 +42,20 @@
       // calculate these 3 arrays
       // call addTodo, removeTodo, updateTodo functions on each of the
       // elements
-      oldTodoState = newTodos;
+      let toAdd = true;
+      for(let i=0;i<newTodos.length-1;i++){
+        if(newTodos[i].title === newTodos[newTodos.length-1].title){
+          toAdd = false;
+        }
+      };
+
+      if(toAdd){
+        added.push(newTodos[newTodos.length-1]);
+        addTodoToDom();
+      }else{
+        updated.push(newTodos[newTodos.length-1]);
+        console.log(document.querySelector('#titletodo'));
+      }
     }
 
     function addTodo() {
@@ -41,7 +65,7 @@
         title: title,
         description: description,
         id: globalId++,
-      })
+      });
       updateState(todoState);
     }
   </script>
@@ -51,8 +75,7 @@
   <input type="text" id="title" placeholder="Todo title"></input> <br /><br />
   <input type="text" id="description" placeholder="Todo description"></input> <br /><br />
   <button onclick="addTodo()">Add todo</button>
-  <br /> <br />
-
+  <br/><br/>
   <div id="todos">
 
   </div>

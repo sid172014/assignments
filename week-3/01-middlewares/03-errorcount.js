@@ -23,4 +23,14 @@ app.get('/errorCount', function(req, res) {
   res.status(200).json({ errorCount });
 });
 
+// Solution - For this problem the best thing to use is the global catches
+app.use((err,req,res,next) => { // This is how we define global catches
+  if(err){
+    res.status(404).send();
+    errorCount++;
+  }else{
+    next();
+  }  
+})
+
 module.exports = app;

@@ -39,11 +39,88 @@
 
   Testing the server - run `npm run test-todoServer` command in terminal
  */
-  const express = require('express');
-  const bodyParser = require('body-parser');
-  
-  const app = express();
-  
-  app.use(bodyParser.json());
-  
-  module.exports = app;
+const express = require('express');
+const bodyParser = require('body-parser');
+const todos = require('./todos.json');
+const fs = require('fs');
+const port = 3000;
+
+const app = express();
+
+app.use(bodyParser.json());
+
+// Retrieve all the tasks which are present inside the 'todos.json' file
+app.get('/', (req, res) => {
+  res.send(todos);
+});
+
+// Retrieve a task with the help of the id which will be there for each of the task which is present inside the 'todos.json' file
+app.get('/todos/:id', (req, res) => {
+  const user = todos.find((item) => {
+    return item.id == req.params.id;
+  });
+  if (!user) {
+    res.status(404).send();
+  }
+  res.send(user);
+});
+
+// Retrieve all the objects that are present inside the todo list item array
+app.post('/todos', (req, res) => {
+  let newId = todos[todos.length - 1].id + 1;
+  const userObject = {
+    id: newId,
+    title: req.body.title,
+    description: req.body.description,
+    completed: req.body.completed
+  };
+
+  const todolist = JSON.parse(fs.readFileSync('./todos.json', "utf-8"));
+  todolist.push(userObject);
+  fs.writeFileSync('./todos.json', JSON.stringify(todolist), 'utf-8');
+  res.status(201).send(userObject);
+});
+
+// Updates any JSON object that is already present inside the 'todos.json' file
+app.put('/todos/:id', (req, res) => {
+  const user = todos.find((item) => {
+    return item.id == req.params.id;
+  });
+  if (!user) {
+    res.status(404).send();
+  } else {
+    const userObject = {
+      id: user.id,
+      title: req.body.title || user.title,
+      description: req.body.description || user.description,
+      completed: req.body.completed || user.completed
+    };
+
+    todos[req.params.id - 1] = userObject;
+    fs.writeFileSync('./todos.json', JSON.stringify(todos), 'utf-8');
+    res.status(200).send();
+  }
+});
+
+app.delete('/todos/:id', (req, res) => {
+  if (todos[todos.length - 1].id < req.params.id) {
+    res.status(404).send();
+  } else {
+    const temp = todos.filter((item) => {
+      return item.id != req.params.id;
+    });
+
+    fs.writeFileSync('./todos.json', JSON.stringify(temp), 'utf-8');
+    res.status(200).send();
+  }
+});
+
+app.get('*' , (req,res) => {
+  res.status(404).send();
+})
+
+app.listen(port, () => {
+  console.log("Server is listening on port " + port);
+});
+
+module.exports = app;

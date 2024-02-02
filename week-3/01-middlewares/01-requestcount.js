@@ -10,6 +10,11 @@ let requestCount = 0;
 // maintain a count of the number of requests made to the server in the global
 // requestCount variable
 
+app.use((req,res,next) => { // The middlewares use upto 3 parameters so basically whenever we want to define a middleware we need to give atleast 3 parameters to the middleware function
+  requestCount++;
+  next(); // Calling the next() function so the program moves out of the middleware to the next step
+});
+
 app.get('/user', function(req, res) {
   res.status(200).json({ name: 'john' });
 });
